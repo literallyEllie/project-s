@@ -1,0 +1,67 @@
+[versions]
+# Plugins
+detekt = "1.23.6"
+spotless = "6.25.0"
+
+# Libraries
+# https://mvnrepository.com/artifact/io.javalin/javalin
+javalin = "6.1.4"
+
+# Avaje
+# https://github.com/avaje/avaje-inject/releases
+avaje-inject = "9.12"
+# https://github.com/avaje/avaje-http/releases
+avaje-http = "2.4"
+# https://github.com/avaje/avaje-config/releases
+avaje-config = "3.14"
+
+# Datasource
+mongodb-driver = "4.11.1"
+hikaricp = "5.1.0"
+postgres = "42.6.0"
+
+# Utilities
+gson = "2.10.1"
+slf4j = "2.0.9"
+annotations = "24.0.1"
+
+# Testing
+junit = "4.13.2"
+mockk = "1.13.7"
+
+[libraries]
+# Plugins
+plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+
+# Libraries
+javalin = { module = "io.javalin:javalin", version.ref = "javalin" }
+
+# Avaje
+avaje-inject = { module = "io.avaje:avaje-inject", version.ref = "avaje-inject" }
+avaje-inject-generator = { module = "io.avaje:avaje-inject-generator", version.ref = "avaje-inject" }
+avaje-config = { module = "io.avaje:avaje-config", version.ref = "avaje-config" }
+avaje-http-api = { module = "io.avaje:avaje-http-api", version.ref = "avaje-http" }
+avaje-http-client = { module = "io.avaje:avaje-http-client", version.ref = "avaje-http" }
+avaje-http-client-gson = { module = "io.avaje:avaje-http-client-gson", version.ref = "avaje-http" }
+avaje-http-client-generator = { module = "io.avaje:avaje-http-client-generator", version.ref = "avaje-http" }
+avaje-http-javalin-generator = { module = "io.avaje:avaje-http-javalin-generator", version.ref = "avaje-http" }
+
+# Datasource
+mongodb-driver = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodb-driver" }
+postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+
+# Utilities
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+
+# Testing
+test-junit = { module = "junit:junit", version.ref = "junit" }
+test-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+[plugins]
+detekt = { id = "io.github.arurbosch.detekt", version.ref = "detekt" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

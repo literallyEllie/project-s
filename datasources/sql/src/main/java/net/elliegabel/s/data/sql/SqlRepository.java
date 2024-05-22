@@ -227,7 +227,7 @@ public abstract class SqlRepository<T> implements Repository<T, ResultSet> {
     public abstract T mapToType(@NotNull ResultSet resultSet) throws SQLException;
 
     protected void logError(String err, Exception e, Object... params) {
-        getLogger().error(err, params);
+        getLogger().error(err.formatted(params), e);
     }
 
     protected abstract Logger getLogger();

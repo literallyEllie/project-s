@@ -15,7 +15,7 @@ import java.util.UUID;
  * Server indexed location operations.
  * As opposed to player location operations see PlayerLocationController.
  */
-@Controller("/location")
+@Controller("/players")
 public class ServerLocationController implements ApiController  {
 
     private final LocationService locationService;
@@ -28,24 +28,22 @@ public class ServerLocationController implements ApiController  {
     /* All players on a proxy */
     @Get("/proxy/{proxyId}")
     public List<UUID> getOnProxy(String proxyId) {
-        // TODO
-        return new ArrayList<>();
+        return locationService.getPlayersOnProxy(proxyId);
     }
 
     /* All players on a proxy */
     @Get("/server/{serverId}")
     public List<UUID> getOnServer(String serverId) {
-        // TODO
-        return new ArrayList<>();
-    }
+        return locationService.getPlayersOnServer(serverId);
 
-    @Delete("/proxy/{proxyId}")
-    public void deleteProxy(String proxyId) {
-        // TODO
     }
-
-    @Delete("/server/{serverId}")
-    public void deleteServer(String serverId) {
-        // TODO
-    }
+//    @Delete("/proxy/{proxyId}")
+//    public void deleteProxy(String proxyId) {
+//        // TODO
+//    }
+//
+//    @Delete("/server/{serverId}")
+//    public void deleteServer(String serverId) {
+//        // TODO
+//    }
 }

@@ -14,6 +14,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -60,8 +62,9 @@ public class LocationRepository extends SqlRepository<PlayerLocation> {
     public Optional<String> getProxyId(@NotNull UUID playerId) throws DatabaseException {
         try (Connection connection = datasource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT proxy_id FROM " + TABLE_NAME + " WHERE id = ?");
-            ResultSet resultSet = preparedStatement.executeQuery();
+            preparedStatement.setObject(1, playerId);
 
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return Optional.of(resultSet.getString(COLUMN_PROXY_ID));
             }
@@ -77,8 +80,9 @@ public class LocationRepository extends SqlRepository<PlayerLocation> {
     public Optional<String> getServerId(@NotNull UUID playerId) throws DatabaseException {
         try (Connection connection = datasource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT server_id FROM " + TABLE_NAME + " WHERE id = ?");
-            ResultSet resultSet = preparedStatement.executeQuery();
+            preparedStatement.setObject(1, playerId);
 
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return Optional.of(resultSet.getString(COLUMN_SERVER_ID));
             }
@@ -86,6 +90,42 @@ public class LocationRepository extends SqlRepository<PlayerLocation> {
             return Optional.empty();
         } catch (SQLException e) {
             logError("failed to get {} serverId", e, playerId);
+            throw new DatabaseException();
+        }
+    }
+
+    public List<UUID> getPlayersOnProxy(@NotNull String proxyId) {
+        try (Connection connection = datasource.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id FROM " + TABLE_NAME + " WHERE proxy_id = ?");
+            preparedStatement.setString(1, proxyId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<UUID> players = new ArrayList<>();
+            while (resultSet.next()) {
+                players.add(UUID.fromString(resultSet.getString(COLUMN_ID)));
+            }
+
+            return players;
+        } catch (SQLException e) {
+            logError("failed to get players on proxy: {}", e, proxyId);
+            throw new DatabaseException();
+        }
+    }
+
+    public List<UUID> getPlayersOnServer(@NotNull String serverId) {
+        try (Connection connection = datasource.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id FROM " + TABLE_NAME + " WHERE server_id = ?");
+            preparedStatement.setString(1, serverId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<UUID> players = new ArrayList<>();
+            while (resultSet.next()) {
+                players.add(UUID.fromString(resultSet.getString(COLUMN_ID)));
+            }
+
+            return players;
+        } catch (SQLException e) {
+            logError("failed to get players on server: {}", e, serverId);
             throw new DatabaseException();
         }
     }
@@ -100,7 +140,6 @@ public class LocationRepository extends SqlRepository<PlayerLocation> {
 
     @Override
     public void createTableIfNotExists() {
-        System.out.println("create " + TABLE_NAME);
         try (Connection connection = datasource.getConnection()) {
             connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
                     "id UUID PRIMARY KEY," +

@@ -1,7 +1,8 @@
 package com.elliegabel.s.player.domain.service;
 
 import com.elliegabel.s.log.Log;
-import com.elliegabel.s.player.auth.PreLoginResponse;
+import com.elliegabel.s.player.dto.auth.LoginNotification;
+import com.elliegabel.s.player.dto.auth.PreLoginResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
@@ -45,15 +46,11 @@ public class PlayerAuthService {
      * and adds them to the tracking.
      *
      * @param playerId Player logging in.
-     * @param proxyId Proxy they're connected to.
-     * @param serverId Server they're connected to.
+     * @param notification Notification
      */
-    public void login(@NotNull UUID playerId, @NotNull String username, @NotNull String ip,
-                      @NotNull String proxyId, @NotNull String serverId) {
-        LOGGER.info("login {}/{} @ {} to {}/{}", playerId, username, ip, proxyId, serverId);
-
-        profileService.handleLogin(playerId, username, ip);
-        locationService.setLocation(playerId, proxyId, serverId);
+    public void login(@NotNull UUID playerId, LoginNotification notification) {
+        profileService.handleLogin(playerId, notification.playerName(), notification.ip());
+        locationService.setLocation(playerId, notification.location());
     }
 
     /**

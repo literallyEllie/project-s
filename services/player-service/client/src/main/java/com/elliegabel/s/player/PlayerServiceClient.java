@@ -1,16 +1,15 @@
 package com.elliegabel.s.player;
 
-import com.elliegabel.s.player.auth.PreLoginResponse;
-import com.elliegabel.s.player.preference.Preference;
-import com.elliegabel.s.player.preference.PreferenceOption;
+import com.elliegabel.s.player.dto.auth.LoginNotification;
+import com.elliegabel.s.player.dto.auth.PreLoginResponse;
+import com.elliegabel.s.player.dto.lookup.PlayerId;
+import com.elliegabel.s.player.dto.profile.RankUpdateRequest;
+import com.elliegabel.s.player.location.PlayerLocation;
 import com.elliegabel.s.player.profile.PlayerProfile;
-import com.elliegabel.s.player.profile.PlayerRank;
 import com.elliegabel.s.player.skin.PlayerSkinData;
 import io.avaje.http.api.*;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -23,40 +22,68 @@ public interface PlayerServiceClient {
 
     /* Auth */
 
-    @Get("/player/{playerId}/auth/prelogin")
-    PreLoginResponse preLogin(UUID playerId, @QueryParam String ip);
+    @Get("/auth/{playerId}/prelogin")
+    PreLoginResponse preLogin(UUID playerId, String ip);
 
-    @Post("/player/{playerId}/auth/login")
-    void login(UUID playerId, @QueryParam String playerName, @QueryParam String ip, @QueryParam String proxyId, @QueryParam String serverId);
+    @Post("/auth/{playerId}/login")
+    void login(UUID playerId, LoginNotification notification);
 
-    @Post("/player/{playerId}/auth/logout")
+    @Delete("/auth/{playerId}/logout")
     void logout(UUID playerId);
 
     /* Profile */
 
-    @Get("/player/{playerId}")
+    @Get("/profile/{playerId}")
     PlayerProfile getProfile(UUID playerId);
 
-    @Get("/player/name/{playerName}/profile")
-    PlayerProfile getProfileByName(String playerName);
+    @Patch("/profile/{playerId}/rank")
+    void updateRank(UUID playerId, RankUpdateRequest rank);
 
-    @Patch("/player/{playerId}/rank/{rank}")
-    void updateRank(UUID playerId, PlayerRank rank);
+    @Get("/profile/name/{playerName}")
+    PlayerProfile getProfileByName(String playerName);
 
     /* Lookup */
 
-    @Get("/player/name/{playerName}")
-    UUID getPlayerId(String playerName);
+    @Get("/lookup/id/{playerName}")
+    PlayerId getPlayerId(String playerName);
 
-    @Get("/player/id/{playerId}")
+    @Get("/lookup/username/{playerId}")
     String getPlayerUsername(UUID playerId);
+
+    /* Individual Location */
+
+    @Get("/location/{playerId}")
+    PlayerLocation getPlayerLocation(UUID playerId);
+
+    @Put("/location/{playerId}")
+    void setPlayerLocation(UUID playerId, PlayerLocation location);
+
+    @Delete("/location/{playerId}")
+    void unsetPlayerLocation(UUID playerId);
+
+    @Get("/location/{playerId}/proxy")
+    String getPlayerProxy(UUID playerId);
+
+    @Get("/location/{playerId}/server")
+    String getPlayerServer(UUID playerId);
+
+    @Patch("/location/{playerId}/server")
+    void setPlayerServer(UUID playerId, String serverId);
+
+    /* Group location */
+
+    @Get("/players/proxy/{proxyId}")
+    List<UUID> getPlayersOnProxy(String proxyId);
+
+    @Get("/players/server/{serverId}")
+    List<UUID> getPlayersOnServer(String serverId);
 
     /* Skins */
 
-    @Get("/player/{playerId}/skin")
+    @Get("/skin/{playerId}")
     PlayerSkinData getSkin(UUID playerId, @QueryParam boolean fetchExternal);
 
-    @Post("/player/{playerId}/skin")
+    @Put("/skin/{playerId}")
     void updateSkin(UUID playerId, PlayerSkinData data);
 
     /* Preferences */

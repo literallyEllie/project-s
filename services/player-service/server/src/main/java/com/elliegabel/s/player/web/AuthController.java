@@ -1,17 +1,17 @@
 package com.elliegabel.s.player.web;
 
 import com.elliegabel.s.http.ApiController;
-import com.elliegabel.s.player.auth.LoginNotification;
+import com.elliegabel.s.http.util.Validate;
+import com.elliegabel.s.player.dto.auth.LoginNotification;
 import com.elliegabel.s.player.domain.service.PlayerAuthService;
-import com.elliegabel.s.player.auth.PreLoginRequest;
-import com.elliegabel.s.player.auth.PreLoginResponse;
+import com.elliegabel.s.player.dto.auth.PreLoginRequest;
+import com.elliegabel.s.player.dto.auth.PreLoginResponse;
 import io.avaje.http.api.*;
-import io.javalin.http.Context;
 import jakarta.inject.Inject;
 
 import java.util.UUID;
 
-@Controller("/{playerId}/auth")
+@Controller("/auth/{playerId}")
 public class AuthController implements ApiController {
 
     private final PlayerAuthService service;
@@ -23,24 +23,25 @@ public class AuthController implements ApiController {
 
     /* The user wants to log on. */
     @Get("/prelogin")
-    public PreLoginResponse preLogin(Context ctx, UUID playerId, PreLoginRequest request) {
+    public PreLoginResponse preLogin(UUID playerId, PreLoginRequest request) {
+        Validate.requireString("playerIp", request.playerIp());
+
         return service.preLogin(playerId, request.playerIp());
     }
 
     /* The user has logged onto the network. */
     @Post("/login")
-    public void login(UUID playerId, @BodyString LoginNotification notification) {
-        service.login(
-                playerId,
-                notification.playerName(),
-                notification.ip(),
-                notification.proxyId(),
-                notification.serverId()
-        );
+    public void login(UUID playerId, LoginNotification notification) {
+        Validate.requireString("playerName", notification.playerName());
+        Validate.requireString("ip", notification.ip());
+        Validate.requireString("proxyId", notification.location().proxyId());
+        Validate.requireString("serverId", notification.location().serverId());
+
+        service.login(playerId, notification);
     }
 
     /* The user has disconnected */
-    @Post("/logout")
+    @Delete("/logout")
     public void logout(UUID playerId) {
         service.logout(playerId);
     }

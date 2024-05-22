@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.function.Consumer;
 
@@ -34,6 +35,14 @@ public class GsonCustomizer extends Plugin<Void> {
             @Override
             public String toJsonString(@NotNull Object obj, @NotNull Type type) {
                 return gson.toJson(obj, type);
+            }
+            @NotNull
+            public <T> T fromJsonStream(@NotNull InputStream json, @NotNull Type targetType) {
+                try (InputStreamReader reader = new InputStreamReader(json)) {
+                    return gson.fromJson(reader, targetType);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to read JSON from InputStream", e);
+                }
             }
         });
     }

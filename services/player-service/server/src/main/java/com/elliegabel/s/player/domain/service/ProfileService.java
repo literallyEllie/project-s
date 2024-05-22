@@ -2,16 +2,16 @@ package com.elliegabel.s.player.domain.service;
 
 import com.elliegabel.s.log.Log;
 import com.elliegabel.s.player.domain.repository.ProfileRepository;
+import com.elliegabel.s.player.dto.lookup.PlayerId;
 import com.elliegabel.s.player.error.ProfileNotFoundException;
 import com.elliegabel.s.player.profile.PlayerProfile;
 import com.elliegabel.s.player.profile.PlayerRank;
-import io.javalin.http.InternalServerErrorResponse;
+import io.javalin.http.NotFoundResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -34,14 +34,14 @@ public class ProfileService {
      * @param playerId Player id to get the profile of.
      * @return Their profile, or null.
      */
-    public Optional<PlayerProfile> getProfile(@NotNull UUID playerId) {
+    public PlayerProfile getProfile(@NotNull UUID playerId) {
         LOGGER.info("getProfile {}", playerId);
-        return repository.getProfile(playerId);
+        return repository.getProfile(playerId).orElseThrow(NotFoundResponse::new);
     }
 
-    public Optional<PlayerProfile> getProfileByUsername(@NotNull String username) {
+    public PlayerProfile getProfileByUsername(@NotNull String username) {
         LOGGER.info("getProfileByUsername {}", username);
-        return repository.getProfileByName(username);
+        return repository.getProfileByName(username).orElseThrow(NotFoundResponse::new);
     }
 
     /**
@@ -50,14 +50,14 @@ public class ProfileService {
      * @param playerId PLayer id.
      * @return Their username.
      */
-    public Optional<String> getUsernameFromId(@NotNull UUID playerId) {
+    public String getUsernameFromId(@NotNull UUID playerId) {
         LOGGER.info("getUsernameFromId({})", playerId);
-        return repository.getUsernameById(playerId);
+        return repository.getUsernameById(playerId).orElseThrow(NotFoundResponse::new);
     }
 
-    public Optional<UUID> getUuidFromName(@NotNull String playerName) {
+    public PlayerId getUuidFromName(@NotNull String playerName) {
         LOGGER.info("getUuidFromName({})", playerName);
-        return repository.getIdByUsername(playerName);
+        return repository.getIdByUsername(playerName).orElseThrow(NotFoundResponse::new);
     }
 
     /**
@@ -67,7 +67,7 @@ public class ProfileService {
      *
      * @param playerId Player logging in.
      * @param username Their username.
-     * @param ip Their connecting ip.
+     * @param ip       Their connecting ip.
      */
     public void handleLogin(@NotNull UUID playerId, @NotNull String username, @NotNull String ip) {
         LOGGER.info("handleLogin {} {} {}", playerId, username, ip);
@@ -94,7 +94,7 @@ public class ProfileService {
      * Update a player rank.
      *
      * @param playerId Player id to update.
-     * @param rank Their new rank, or null.
+     * @param rank     Their new rank, or null.
      */
     public void updateRank(@NotNull UUID playerId, @NotNull PlayerRank rank) {
         LOGGER.info("updateRank {} -> {}", playerId, rank);

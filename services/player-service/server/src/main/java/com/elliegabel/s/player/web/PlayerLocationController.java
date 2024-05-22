@@ -13,7 +13,7 @@ import java.util.UUID;
  * Player indexed location operations.
  * As opposed to server location operations see ServerLocationController.
  */
-@Controller("{playerId}/location")
+@Controller("/location/{playerId}")
 public class PlayerLocationController implements ApiController  {
 
     private final LocationService locationService;
@@ -29,12 +29,12 @@ public class PlayerLocationController implements ApiController  {
         return locationService.getLocation(playerId);
     }
 
-    @Post("{proxyId}/{serverId}")
-    public void setLocation(UUID playerId, String proxyId, String serverId) {
-        Validate.requireString("proxyId", proxyId);
-        Validate.requireString("serverId", proxyId);
+    @Put
+    public void setLocation(UUID playerId, PlayerLocation location) {
+        Validate.requireString("proxyId", location.proxyId());
+        Validate.requireString("serverId", location.serverId());
 
-        locationService.setLocation(playerId, proxyId, serverId);
+        locationService.setLocation(playerId, location);
     }
 
     @Delete

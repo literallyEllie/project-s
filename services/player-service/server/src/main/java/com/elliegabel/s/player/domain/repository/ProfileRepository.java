@@ -2,9 +2,9 @@ package com.elliegabel.s.player.domain.repository;
 
 import com.elliegabel.s.data.DatabaseException;
 import com.elliegabel.s.log.Log;
+import com.elliegabel.s.player.dto.lookup.PlayerId;
 import com.elliegabel.s.player.profile.PlayerProfile;
 import com.elliegabel.s.player.profile.PlayerRank;
-import io.avaje.inject.InjectModule;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import net.elliegabel.s.data.sql.SqlDatasource;
@@ -48,10 +48,11 @@ public class ProfileRepository extends SqlRepository<PlayerProfile> {
             PreparedStatement statement =
                     connection.prepareStatement("INSERT INTO " + TABLE_NAME + " (id, username, last_ip) " +
                             "VALUES (?, ?, ?) ON CONFLICT (id) DO " +
-                            "UPDATE SET username = EXCLUDED.username, last_ip = EXCLUDED.last_ip, last_seen = NOW()");
+                            "UPDATE SET username = EXCLUDED.username, last_ip = EXCLUDED.last_ip, last_seen = CURRENT_TIMESTAMP");
             statement.setObject(1, playerId);
             statement.setString(2, username);
             statement.setString(3, ip);
+            statement.executeUpdate();
         } catch (SQLException e) {
             logError("failed to upsert profile for {}", e, playerId);
             throw new DatabaseException();
@@ -71,7 +72,7 @@ public class ProfileRepository extends SqlRepository<PlayerProfile> {
 
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return Optional.of(resultSet.getString("username"));
+                return Optional.of(resultSet.getString(COLUMN_USERNAME));
             }
         } catch (SQLException e) {
             logError("failed to get username by id for {}", e, playerId);
@@ -82,19 +83,22 @@ public class ProfileRepository extends SqlRepository<PlayerProfile> {
     }
 
     @NotNull
-    public Optional<UUID> getIdByUsername(@NotNull String playerName) {
+    public Optional<PlayerId> getIdByUsername(@NotNull String playerName) {
         try (Connection connection = datasource.getConnection()) {
             PreparedStatement statement =
-                    connection.prepareStatement("SELECT id FROM " + TABLE_NAME + " WHERE username = ?");
+                    connection.prepareStatement("SELECT id, username FROM " + TABLE_NAME + " WHERE username = ?");
             statement.setString(1, playerName);
 
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return Optional.of(resultSet.getObject(COLUMN_ID, UUID.class));
+                return Optional.of(new PlayerId(
+                        resultSet.getObject(COLUMN_ID, UUID.class),
+                        resultSet.getString(COLUMN_USERNAME)
+                ));
             }
         } catch (SQLException e) {
             getLogger().error("failed to get id by username for {}", playerName);
-            throw new RuntimeException("database error", e);
+            throw new DatabaseException();
         }
 
         return Optional.empty();
@@ -109,7 +113,7 @@ public class ProfileRepository extends SqlRepository<PlayerProfile> {
     }
 
     public boolean updateLastSeen(@NotNull UUID playerId) {
-        return updateField(COLUMN_ID, playerId, COLUMN_LAST_SEEN, new Time(System.currentTimeMillis()));
+        return updateField(COLUMN_ID, playerId, COLUMN_LAST_SEEN, new Timestamp(System.currentTimeMillis()));
     }
 
     @Override
@@ -118,8 +122,8 @@ public class ProfileRepository extends SqlRepository<PlayerProfile> {
         UUID id = resultSet.getObject(COLUMN_ID, UUID.class);
         String username = resultSet.getString(COLUMN_USERNAME);
         String lastIp = resultSet.getString(COLUMN_LAST_IP);
-        Time firstSeen = resultSet.getTime(COLUMN_FIRST_SEEN);
-        Time lastSeen = resultSet.getTime(COLUMN_LAST_SEEN);
+        Timestamp firstSeen = resultSet.getTimestamp(COLUMN_FIRST_SEEN);
+        Timestamp lastSeen = resultSet.getTimestamp(COLUMN_LAST_SEEN);
 
         String rawRank = resultSet.getString(COLUMN_RANK);
         PlayerRank rank = PlayerRank.PLAYER;

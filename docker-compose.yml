@@ -1,31 +1,30 @@
 version: '3.8'
 services:
   player-service:
-    build: ./user-authentication-service
+    build: ./services/player-service
     ports:
       - "8080:8080"
     environment:
       - HTTP_PORT=8080
-      - CONTEXT_PATH=/player
     networks:
       - minecraft-network
     depends_on:
-      - mysql
-#
+      - postgres
+
 #  matchmaking-service:
-#    build: ./matchmaking-service
+#    build: ./services/matchmaking-service
 #    ports:
 #      - "8082:8080"
 #    networks:
 #      - minecraft-network
 
-  mysql:
-    image: mysql:8.0
+  postgres:
+    image: postgres:latest
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: authdb
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: opt
     ports:
-      - "3306:3306"
+      - "5432:5432"
     networks:
       - minecraft-network
 

@@ -2,6 +2,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 
 plugins {
     `java-library`
+    `maven-publish`
 }
 
 tasks.withType<JavaCompile> {
@@ -14,6 +15,10 @@ tasks.withType<JavaCompile> {
 val libs = the<LibrariesForLibs>()
 val implementation by configurations
 
-dependencies {
-
+publishing {
+    publishing {
+        publications.create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
 }

@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @Singleton
 public class LocationRepository extends SqlRepository<PlayerLocation> {
-    private static final Logger LOGGER = Log.newLogger("LocationRepository");
+    private static final Logger LOGGER = Log.newLogger(LocationRepository.class);
     private static final String TABLE_NAME = "player_locations";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_PROXY_ID = "proxy_id";

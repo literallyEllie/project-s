@@ -9,7 +9,4 @@ version = "0.0.1-SNAPSHOT"
 
 dependencies {
     api(project(":commons"))
-
-//    api(libs.avaje.http.client)
-//    api(libs.avaje.http.client.gson)
 }

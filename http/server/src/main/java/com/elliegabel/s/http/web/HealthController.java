@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 @Controller("/health")
 public class HealthController {
-    private static final Logger LOGGER = Log.newLogger("HealthController");
+    private static final Logger LOGGER = Log.newLogger(HealthController.class);
 
     private final Map<String, ComponentProbe> probes;
 

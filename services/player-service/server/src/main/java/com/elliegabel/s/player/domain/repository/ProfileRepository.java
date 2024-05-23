@@ -25,7 +25,7 @@ import java.util.UUID;
  */
 @Singleton
 public class ProfileRepository extends SqlRepository<PlayerProfile> {
-    private static final Logger LOGGER = Log.newLogger("ProfileRepository");
+    private static final Logger LOGGER = Log.newLogger(ProfileRepository.class);
     private static final String TABLE_NAME = "player_profiles";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_USERNAME = "username";

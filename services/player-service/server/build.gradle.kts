@@ -2,7 +2,7 @@ plugins {
     id("convention-http-server")
     id("convention-style")
     id("convention-test")
-    id("io.avaje.inject") version "0.3"
+    id("convention-app")
 }
 
 group = "com.elliegabel.s.player"
@@ -12,4 +12,16 @@ dependencies {
     api(project(":http:server"))
     api(project(":datasources:sql"))
     api(project(":services:player-service:client"))
+}
+
+tasks {
+    shadowJar {
+        archiveFileName = "player-service.jar"
+    }
+
+    jar {
+        manifest {
+            attributes["Main-Class"] = "com.elliegabel.s.player.PlayerServiceApp"
+        }
+    }
 }

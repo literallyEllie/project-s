@@ -1,4 +1,4 @@
 FROM openjdk:17.0.1-jdk-slim
 WORKDIR /app
-COPY app/build/libs/app.jar /app/app.jar
-CMD ["java", "-jar", "/app/app.jar"]
+COPY server/build/libs/player-service.jar /app/player-service.jar
+CMD ["java", "-jar", "/app/player-service.jar"]

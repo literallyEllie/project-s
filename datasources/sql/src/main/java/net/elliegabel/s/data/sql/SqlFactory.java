@@ -26,9 +26,9 @@ public class SqlFactory {
     @NotNull
     private static HikariConfig loadCredentials() {
         var config = new HikariConfig();
-        config.setJdbcUrl(Config.get("datasource.sql.url", "jdbc:postgresql://localhost:5432/project_s"));
-        config.setUsername(Config.get("datasource.sql.username", ""));
-        config.setPassword(Config.get("datasource.sql.password", ""));
+        config.setJdbcUrl(Config.get("POSTGRES_URL", "jdbc:postgresql://localhost:5432/project_s"));
+        config.setUsername(Config.get("POSTGRES_USER", ""));
+        config.setPassword(Config.get("POSTGRES_PASS", ""));
         return new HikariConfig();
     }
 }
